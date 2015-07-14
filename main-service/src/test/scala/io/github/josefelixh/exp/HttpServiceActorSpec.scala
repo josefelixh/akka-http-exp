@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
 import io.github.josefelixh.exp.stubs.StubbedHttpService
 import org.scalatest.{FlatSpecLike, GivenWhenThen}
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.{get, urlEqualTo, aResponse}
 import io.github.josefelixh.exp.healthcheck._
 
 class HttpServiceActorSpec extends TestKit(ActorSystem("test-system"))
@@ -13,13 +13,13 @@ class HttpServiceActorSpec extends TestKit(ActorSystem("test-system"))
   with GivenWhenThen
   with StubbedHttpService {
 
-  trait ServiceActorTest {
-    val serviceActor = system.actorOf(HttpServiceActor.props(StubbedHttpService.Host, StubbedHttpService.Port))
+  trait HttpServiceActorTest {
+    val serviceActor = system.actorOf(HttpServiceActor.props(Host, Port))
   }
 
-  "ServiceActor" should "report unhealthy when service is unavailable" in new ServiceActorTest {
+  "HttpServiceActor" should "report unhealthy when service is unavailable" in new HttpServiceActorTest {
     Given("The service status is not available")
-    stubFor(get(urlEqualTo("/service/status")).willReturn(aResponse().withStatus(503)))
+    wiremockClient.stubFor(get(urlEqualTo("/service/status")).willReturn(aResponse().withStatus(503)))
 
     When("the status is requested")
     serviceActor ! Status
@@ -28,9 +28,9 @@ class HttpServiceActorSpec extends TestKit(ActorSystem("test-system"))
     expectMsg(Unhealthy)
   }
 
-  it should "report healthy when service is available" in new ServiceActorTest {
+  it should "report healthy when service is available" in new HttpServiceActorTest {
     Given("The service status is not available")
-    stubFor(get(urlEqualTo("/service/status")).willReturn(aResponse().withStatus(204)))
+    wiremockClient.stubFor(get(urlEqualTo("/service/status")).willReturn(aResponse().withStatus(204)))
 
     When("the status is requested")
     serviceActor ! Status
