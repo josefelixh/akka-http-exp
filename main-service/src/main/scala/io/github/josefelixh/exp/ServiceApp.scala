@@ -1,10 +1,13 @@
 package io.github.josefelixh.exp
 
+import java.io.EOFException
+
 import akka.actor.{ActorSystem, ActorRef}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.datastax.driver.core.Cluster
 
+import scala.annotation.tailrec
 import scala.io.StdIn
 
 object ServiceApp extends Service with App {
@@ -19,9 +22,17 @@ object ServiceApp extends Service with App {
 
   Http().bindAndHandle(routes, "localhost", 9000)
 
-  StdIn.readLine()
+  `Ctrl+D`
+  
   cluster.close()
   actorSystem.shutdown()
   actorSystem.awaitTermination()
-  sys.exit(0)
+
+  @tailrec
+  private def `Ctrl+D`: Unit = try {
+    StdIn.readChar()
+  } catch {
+    case e: StringIndexOutOfBoundsException => `Ctrl+D`
+    case e: EOFException => ()
+  }
 }
