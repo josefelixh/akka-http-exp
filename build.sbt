@@ -7,3 +7,6 @@ lazy val commonSettings = Seq(
 
 lazy val `main-service` = project
   .settings(commonSettings: _*)
+
+lazy val stubs = project
+  .settings(commonSettings: _*)
