@@ -22,8 +22,7 @@ class ServiceSpec extends FlatSpec
   trait ServiceTest extends Service {
     override val dispatcher: ExecutionContextExecutor = executor
     override val dbActor = system.actorOf(DbActor.props(cluster))
-    override val httpServiceActor = system.actorOf(
-      HttpServiceActor.props(Host, Port))
+    override val httpServiceActor = system.actorOf(HttpServiceActor.props(host, port))
   }
 
   "Service" should "respond to status request" in new ServiceTest {

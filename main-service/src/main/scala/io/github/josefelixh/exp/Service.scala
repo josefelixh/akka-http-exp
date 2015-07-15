@@ -1,17 +1,14 @@
 package io.github.josefelixh.exp
 
-import akka.actor.{ActorRef, ActorSystem}
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
+import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.util.Timeout
-import com.datastax.driver.core.Cluster
 import io.github.josefelixh.exp.healthcheck._
 import spray.json.DefaultJsonProtocol
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.pattern.ask
-
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.ExecutionContextExecutor
 
 case class ServiceStatus(`http-service`: String, `db`: String)
 

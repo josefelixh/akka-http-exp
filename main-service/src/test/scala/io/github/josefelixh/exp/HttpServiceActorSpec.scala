@@ -14,7 +14,7 @@ class HttpServiceActorSpec extends TestKit(ActorSystem("test-system"))
   with StubbedHttpService {
 
   trait HttpServiceActorTest {
-    val serviceActor = system.actorOf(HttpServiceActor.props(Host, Port))
+    val serviceActor = system.actorOf(HttpServiceActor.props(host, port))
   }
 
   "HttpServiceActor" should "report unhealthy when service is unavailable" in new HttpServiceActorTest {
