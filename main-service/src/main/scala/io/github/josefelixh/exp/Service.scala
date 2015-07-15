@@ -1,7 +1,6 @@
 package io.github.josefelixh.exp
 
 import akka.actor.ActorRef
-import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.util.Timeout
 import io.github.josefelixh.exp.healthcheck._
@@ -17,7 +16,6 @@ trait Protocols extends DefaultJsonProtocol {
 }
 
 trait Service extends Protocols {
-
   implicit val dispatcher: ExecutionContextExecutor
 
   val dbActor: ActorRef
@@ -25,9 +23,9 @@ trait Service extends Protocols {
 
   import scala.concurrent.duration._
   import scala.language.postfixOps
-  implicit val timeout = Timeout(1 second)
+  implicit val timeout = Timeout(10 seconds)
 
-  val routes: Route = {
+  val routes = {
     pathPrefix("status") {
       complete { serviceStatus }
     }

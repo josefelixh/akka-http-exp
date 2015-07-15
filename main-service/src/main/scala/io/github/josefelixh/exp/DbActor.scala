@@ -24,8 +24,8 @@ class DbActor(cluster: Cluster) extends Actor {
     GFutures.addCallback(
       session.executeAsync("select cluster_name from system.local;"),
       new GFutureCallback[ResultSet] {
-        override def onFailure(t: Throwable): Unit = sender ! Unhealthy
-        override def onSuccess(result: ResultSet): Unit = sender ! Healthy
+        override def onFailure(t: Throwable) = sender ! Unhealthy
+        override def onSuccess(result: ResultSet) = sender ! Healthy
       },
       context.dispatcher
     )

@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 
 private object StubbedCassandra {
   val log = LoggerFactory.getLogger("StubbedCassandra")
-  val binaryPorts = Stream.from(58042, 2).iterator
+  val binaryPorts = Stream.from(59042, 2).iterator
   def nextBinaryPort = synchronized { binaryPorts.next() }
-  val adminPorts = Stream.from(58043, 2).iterator
+  val adminPorts = Stream.from(59043, 2).iterator
   def nextAdminPort = synchronized { adminPorts.next() }
 }
 
