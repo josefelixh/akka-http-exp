@@ -16,8 +16,6 @@ class DbActorSpec extends TestKit(ActorSystem("test-system"))
   with StubbedCassandra
   with GivenWhenThen {
 
-  import StubbedCassandra._
-
   trait DbActorTest {
     val dbActor = system.actorOf(DbActor.props(cluster))
   }
