@@ -23,16 +23,22 @@ object ServiceApp extends Service with App {
   Http().bindAndHandle(routes, "localhost", 9000)
 
   `Ctrl+D`
-  
+
   cluster.close()
   actorSystem.shutdown()
   actorSystem.awaitTermination()
 
-  @tailrec
-  private def `Ctrl+D`: Unit = try {
-    StdIn.readChar()
-  } catch {
-    case e: StringIndexOutOfBoundsException => `Ctrl+D`
-    case e: EOFException => ()
+  private def `Ctrl+D`: Unit = {
+    @tailrec
+    def rec(stop: Boolean): Unit = stop match {
+      case true => ()
+      case false => rec {
+        try { StdIn.readChar(); false } catch {
+          case e: StringIndexOutOfBoundsException => false
+          case e: EOFException => true
+        }
+      }
+    }
+    rec(false)
   }
 }
