@@ -1,7 +1,7 @@
 name := """akka-http-exp"""
 
 libraryDependencies ++= {
-  val akka = "2.3.11"
+  val akka = "2.3.12"
   val akkaStreams = "1.0"
   val cassandra = "2.1.6"
   val scassandra = "0.8.0"
