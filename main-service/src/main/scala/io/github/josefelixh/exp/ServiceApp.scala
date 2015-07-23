@@ -15,7 +15,7 @@ object ServiceApp extends Service with App {
   override implicit val dispatcher = actorSystem.dispatcher
   implicit val materializer = ActorMaterializer()
 
-  val cluster = Cluster.builder().addContactPoint("localhost").withPort(9042).build()
+  val cluster = Cluster.builder().addContactPoint("localhost").withPort(8042).build()
 
   override lazy val dbActor: ActorRef = actorSystem.actorOf(DbActor.props(cluster))
   override lazy val httpServiceActor: ActorRef = actorSystem.actorOf(HttpServiceActor.props("localhost", 8080))
