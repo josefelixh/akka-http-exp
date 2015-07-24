@@ -8,9 +8,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqual
 import io.github.josefelixh.exp.healthcheck.Healthy
 import io.github.josefelixh.exp.http.versioning._
 import io.github.josefelixh.exp.stubs.{StubbedCassandra, StubbedHttpService}
+import org.json4s.JsonAST.JObject
 import org.scalatest.{FlatSpec, Matchers}
 import org.scassandra.http.client.PrimingRequest
-import spray.json._
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContextExecutor
@@ -40,7 +42,7 @@ class ServiceSpec extends FlatSpec
     Get("/status").withHeaders(Accept(`application/vnd.service.v1+json`)) ~> routes ~> check {
       status shouldBe OK
       contentType shouldBe ContentType(`application/vnd.service.v1+json`)
-      responseAs[String].parseJson shouldBe JsObject(
+      responseAs[JValue] shouldBe JObject(
         "http-service" -> Healthy,
         "db" -> Healthy
       )
@@ -50,10 +52,9 @@ class ServiceSpec extends FlatSpec
   it should "respond to post creating new Products" in new ServiceTest {
     Post("/products")
       .withHeaders(Accept(`application/vnd.service.v1+json`))
-      .withEntity(ContentType(`application/vnd.service.v1+json`),
-        JsObject(
-          "name" -> JsString("product1")
-      ).compactPrint) ~>
+      .withEntity(ContentType(`application/vnd.service.v1+json`), compact(
+        JObject( "name" -> JString("product1"))
+      )) ~>
     routes ~> check {
       status shouldBe NoContent
     }

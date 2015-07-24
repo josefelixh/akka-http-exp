@@ -1,28 +1,35 @@
 package io.github.josefelixh.exp.http
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.marshalling._
+import akka.http.scaladsl.model.ContentType
+import akka.http.scaladsl.unmarshalling._
+import akka.stream.Materializer
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 import io.github.josefelixh.exp.http.versioning._
-import spray.json._
+import org.json4s._
+import org.json4s.jackson.Serialization
 
 object protocols {
 
   case class ServiceStatus(`http-service`: String, `db`: String)
 
-  trait Protocols extends DefaultJsonProtocol with SprayJsonSupport {
+  trait Protocols extends Json4sSupport {
 
     import scala.language.implicitConversions
 
-    implicit def v1JsonMarshallerConverter[T](writer: RootJsonWriter[T])(implicit printer: JsonPrinter = PrettyPrinter): ToEntityMarshaller[T] =
-      v1JsonMarshaller[T](writer, printer)
+    implicit val serialization = Serialization
 
-    implicit def v1JsonMarshaller[T](implicit writer: RootJsonWriter[T], printer: JsonPrinter = PrettyPrinter): ToEntityMarshaller[T] =
-      v1JsValueMarshaller compose writer.write
+    implicit val formats = DefaultFormats + FieldSerializer[ServiceStatus]()
 
-    implicit def v1JsValueMarshaller(implicit printer: JsonPrinter = PrettyPrinter): ToEntityMarshaller[JsValue] =
-      Marshaller.StringMarshaller.wrap(`application/vnd.service.v1+json`)(printer)
+    implicit def v1Unmarshaller[A: Manifest](implicit serialization: Serialization, formats: Formats, mat: Materializer): FromEntityUnmarshaller[A] =
+      json4sUnmarshaller[A](manifest, serialization, formats, mat).forContentTypes(`application/vnd.service.v1+json`)
 
-    implicit val statusFormat = jsonFormat2(ServiceStatus)
+    implicit def v1Marshaller[A <: AnyRef](implicit serialization: Serialization, formats: Formats, shouldWritePretty: ShouldWritePretty = ShouldWritePretty.False): ToEntityMarshaller[A] =
+      shouldWritePretty match {
+        case ShouldWritePretty.False => Marshaller.StringMarshaller.wrap(ContentType(`application/vnd.service.v1+json`))(serialization.write[A])
+        case _                       => Marshaller.StringMarshaller.wrap(ContentType(`application/vnd.service.v1+json`))(serialization.writePretty[A])
+      }
 
   }
 

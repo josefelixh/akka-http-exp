@@ -10,7 +10,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-stream-experimental" % akkaStreams,
     "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStreams,
     "com.typesafe.akka" %% "akka-http-experimental" % akkaStreams,
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaStreams,
+    "de.heikoseeberger" %% "akka-http-json4s" % "1.0.0",
+    "org.json4s" %% "json4s-jackson" % "3.2.11",
     "com.datastax.cassandra" % "cassandra-driver-core" % cassandra
   ) ++
   Seq(

@@ -1,6 +1,6 @@
 package io.github.josefelixh.exp
 
-import spray.json.JsString
+import org.json4s.JsonAST.JString
 
 object healthcheck {
 
@@ -12,6 +12,6 @@ object healthcheck {
 
   import scala.language.implicitConversions
   implicit def state2String(state: State): String = state.toString.toLowerCase
-  implicit def state2JsString(state: State): JsString = JsString(state)
+  implicit def state2JString(state: State): JString = JString(state)
 
 }
