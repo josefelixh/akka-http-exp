@@ -21,3 +21,5 @@ libraryDependencies ++= {
     "com.github.tomakehurst" % "wiremock" % "1.56" % "test"
   )
 }
+
+Revolver.settings
