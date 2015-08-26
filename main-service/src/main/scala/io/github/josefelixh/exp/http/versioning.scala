@@ -8,4 +8,7 @@ object versioning {
   val `application/vnd.service.v1+json` =
     MediaType.custom("application/vnd.service.v1+json", Encoding.Fixed(HttpCharsets.`UTF-8`))
 
+  val `application/vnd.service.v2+json` =
+    MediaType.custom("application/vnd.service.v2+json", Encoding.Fixed(HttpCharsets.`UTF-8`))
+
 }

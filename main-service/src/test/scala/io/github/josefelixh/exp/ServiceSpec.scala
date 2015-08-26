@@ -27,7 +27,7 @@ class ServiceSpec extends FlatSpec
     override val httpServiceActor = system.actorOf(HttpServiceActor.props(host, port))
   }
 
-  "Service" should "respond to status request" in new ServiceTest {
+  trait StubbedServiceTest extends ServiceTest {
     scassandra.primingClient().prime(
       PrimingRequest.queryBuilder()
         .withQuery("select cluster_name from system.local;")
@@ -36,13 +36,27 @@ class ServiceSpec extends FlatSpec
     )
 
     wiremockClient.stubFor(get(urlEqualTo("/service/status")).willReturn(aResponse().withStatus(204)))
+  }
 
+  "Service" should "respond to status request" in new StubbedServiceTest {
     Get("/status").withHeaders(Accept(`application/vnd.service.v1+json`)) ~> routes ~> check {
       status shouldBe OK
       contentType shouldBe ContentType(`application/vnd.service.v1+json`)
       responseAs[String].parseJson shouldBe JsObject(
         "http-service" -> Healthy,
         "db" -> Healthy
+      )
+    }
+  }
+
+  it should "respond to status request v2" in new StubbedServiceTest {
+    Get("/status").withHeaders(Accept(`application/vnd.service.v2+json`)) ~> routes ~> check {
+      status shouldBe OK
+      contentType shouldBe ContentType(`application/vnd.service.v2+json`)
+      responseAs[String].parseJson shouldBe JsObject(
+        "http-service" -> Healthy,
+        "db" -> Healthy,
+        "version" -> JsString("2")
       )
     }
   }
